@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import loginImage from '../assets/login.svg'
 import { useDispatch, useSelector } from 'react-redux'
-import { loginUser } from '../features/auth/authSlice'
+import { googleLogin, loginUser } from '../features/auth/authSlice'
 const Login = () => {
 	const { register, handleSubmit } = useForm()
 	const navigate = useNavigate()
@@ -11,6 +11,9 @@ const Login = () => {
 	const { email, isLoading } = useSelector(state => state.auth)
 	const onSubmit = ({ email, password }) => {
 		dispatch(loginUser({ email, password }))
+	}
+	const handleGoogleLogin = () => {
+		dispatch(googleLogin())
 	}
 	useEffect(() => {
 		if (!isLoading && email) {
@@ -43,6 +46,9 @@ const Login = () => {
 							<div className='relative !mt-8'>
 								<button type='submit' className='font-bold text-white py-3 rounded-full bg-primary w-full'>
 									Login
+								</button>
+								<button type='button' className='font-bold text-white py-3 rounded-full bg-primary w-full' onClick={handleGoogleLogin}>
+									Login with Google
 								</button>
 							</div>
 							<div>
