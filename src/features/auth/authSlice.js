@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import auth from '../../firebase/firebase.config'
+import { toast } from 'react-hot-toast'
 
 const initialState = {
 	email: '',
@@ -13,8 +14,10 @@ export const createUser = createAsyncThunk('auth/createUser', async ({ email, pa
 	try {
 		const userCredential = await createUserWithEmailAndPassword(auth, email, password)
 		const user = userCredential.user
+		toast.success('user created in successfully')
 		return user.email
 	} catch (error) {
+		toast.error('There was a problem logging in the user')
 		return thunkAPI.rejectWithValue(error.message)
 	}
 })
@@ -23,8 +26,10 @@ export const loginUser = createAsyncThunk('auth/login', async ({ email, password
 	try {
 		const userCredential = await signInWithEmailAndPassword(auth, email, password)
 		const user = userCredential.user
+		toast.success('user logged in successfully')
 		return user.email
 	} catch (error) {
+		toast.error('There was a problem logging in the user')
 		return thunkAPI.rejectWithValue(error.message)
 	}
 })
@@ -34,6 +39,10 @@ const authSlice = createSlice({
 	reducers: {
 		logOut: state => {
 			state.email = ''
+		},
+		setUser: (state, { payload }) => {
+			state.email = payload
+			state.isLoading = false
 		},
 	},
 	extraReducers: builder => {
@@ -72,5 +81,5 @@ const authSlice = createSlice({
 			})
 	},
 })
-export const { logOut } = authSlice.actions
+export const { logOut, setUser } = authSlice.actions
 export default authSlice.reducer

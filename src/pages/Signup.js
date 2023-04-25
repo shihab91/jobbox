@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import loginImage from "../assets/login.svg";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { createUser } from '../features/auth/authSlice'
 const Signup = () => {
 	const { handleSubmit, register, reset, control } = useForm()
@@ -11,6 +11,8 @@ const Signup = () => {
 	const navigate = useNavigate()
 	const [disabled, setDisabled] = useState(true)
 	const dispatch = useDispatch()
+
+	const { email, isLoading } = useSelector(state => state.auth)
 	useEffect(() => {
 		if (password !== undefined && password !== '' && confirmPassword !== undefined && confirmPassword !== '' && password === confirmPassword) {
 			setDisabled(false)
@@ -22,7 +24,11 @@ const Signup = () => {
 	const onSubmit = ({ email, password }) => {
 		dispatch(createUser({ email, password }))
 	}
-
+	useEffect(() => {
+		if (!isLoading && email) {
+			navigate('/')
+		}
+	}, [isLoading, email, navigate])
 	return (
 		<div className='flex h-screen items-center pt-14'>
 			<div className='w-1/2'>
