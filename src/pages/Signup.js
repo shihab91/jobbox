@@ -3,7 +3,7 @@ import loginImage from "../assets/login.svg";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux'
-import { createUser } from '../features/auth/authSlice'
+import { createUser, googleLogin } from '../features/auth/authSlice'
 const Signup = () => {
 	const { handleSubmit, register, reset, control } = useForm()
 	const password = useWatch({ control, name: 'password' })
@@ -23,6 +23,9 @@ const Signup = () => {
 
 	const onSubmit = ({ email, password }) => {
 		dispatch(createUser({ email, password }))
+	}
+	const handleGoogleLogin = () => {
+		dispatch(googleLogin())
 	}
 	useEffect(() => {
 		if (!isLoading && email) {
@@ -61,6 +64,9 @@ const Signup = () => {
 							<div className='!mt-8 '>
 								<button type='submit' className='font-bold text-white py-3 rounded-full bg-primary w-full disabled:bg-gray-300 disabled:cursor-not-allowed' disabled={disabled}>
 									Sign up
+								</button>
+								<button type='button' className='font-bold text-white py-3 rounded-full bg-primary w-full' onClick={handleGoogleLogin}>
+									Login with Google
 								</button>
 							</div>
 							<div>

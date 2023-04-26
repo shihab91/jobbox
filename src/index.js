@@ -10,7 +10,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
 	<React.StrictMode>
 		<Provider store={store}>
-			<Toaster position='top-center' reverseOrder={false} />
+			<Toaster
+				position='top-center'
+				reverseOrder={false}
+				toastOptions={{
+					duration: 5000,
+				}}
+			/>
 			<App />
 		</Provider>
 	</React.StrictMode>

@@ -15,10 +15,9 @@ export const createUser = createAsyncThunk('auth/createUser', async ({ email, pa
 	try {
 		const userCredential = await createUserWithEmailAndPassword(auth, email, password)
 		const user = userCredential.user
-		toast.success('user created in successfully')
+
 		return user.email
 	} catch (error) {
-		toast.error('There was a problem logging in the user')
 		return thunkAPI.rejectWithValue(error.message)
 	}
 })
@@ -27,10 +26,9 @@ export const loginUser = createAsyncThunk('auth/login', async ({ email, password
 	try {
 		const userCredential = await signInWithEmailAndPassword(auth, email, password)
 		const user = userCredential.user
-		toast.success('user logged in successfully')
+
 		return user.email
 	} catch (error) {
-		toast.error('There was a problem logging in the user')
 		return thunkAPI.rejectWithValue(error.message)
 	}
 })
@@ -38,10 +36,9 @@ export const googleLogin = createAsyncThunk('auth/googleLogin', async (payload, 
 	const googleProvider = new GoogleAuthProvider()
 	try {
 		const data = await signInWithPopup(auth, googleProvider)
-		toast.success('user logged in successfully')
+
 		return data.user.email
 	} catch (error) {
-		toast.error('There was a problem logging in the user')
 		return thunkAPI.rejectWithValue(error.message)
 	}
 })
@@ -54,6 +51,9 @@ const authSlice = createSlice({
 		},
 		setUser: (state, { payload }) => {
 			state.email = payload
+			state.isLoading = false
+		},
+		toggleLoading: state => {
 			state.isLoading = false
 		},
 	},
@@ -69,11 +69,13 @@ const authSlice = createSlice({
 				state.isError = false
 				state.error = ''
 				state.email = payload
+				toast.success('Signed in successfully!')
 			})
 			.addCase(createUser.rejected, (state, { payload }) => {
 				state.isLoading = false
 				state.isError = false
 				state.error = payload
+				toast.error(`Sign in failed: ${payload}`)
 			})
 			.addCase(loginUser.pending, state => {
 				state.isLoading = true
@@ -85,11 +87,13 @@ const authSlice = createSlice({
 				state.isError = false
 				state.error = ''
 				state.email = payload
+				toast.success('Signed in successfully!')
 			})
 			.addCase(loginUser.rejected, (state, { payload }) => {
 				state.isLoading = false
 				state.isError = false
 				state.error = payload
+				toast.error(`Sign in failed: ${payload}`)
 			})
 			.addCase(googleLogin.pending, state => {
 				state.isLoading = true
@@ -101,13 +105,15 @@ const authSlice = createSlice({
 				state.isError = false
 				state.error = ''
 				state.email = payload
+				toast.success('Signed in successfully!')
 			})
 			.addCase(googleLogin.rejected, (state, { payload }) => {
 				state.isLoading = false
 				state.isError = false
 				state.error = payload
+				toast.error(`Sign in failed: ${payload}`)
 			})
 	},
 })
-export const { logOut, setUser } = authSlice.actions
+export const { logOut, setUser, toggleLoading } = authSlice.actions
 export default authSlice.reducer
