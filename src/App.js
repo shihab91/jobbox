@@ -4,13 +4,13 @@ import { useEffect } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import auth from './firebase/firebase.config'
 import { useDispatch } from 'react-redux'
-import { setUser, toggleLoading } from './features/auth/authSlice'
+import { getUser, toggleLoading } from './features/auth/authSlice'
 
 function App() {
 	const dispatch = useDispatch()
 	useEffect(() => {
 		onAuthStateChanged(auth, user => {
-			if (user) dispatch(setUser(user.email))
+			if (user) dispatch(getUser(user.email))
 			else {
 				dispatch(toggleLoading())
 			}

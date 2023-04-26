@@ -12,7 +12,10 @@ const Signup = () => {
 	const [disabled, setDisabled] = useState(true)
 	const dispatch = useDispatch()
 
-	const { email, isLoading } = useSelector(state => state.auth)
+	const {
+		user: { email },
+		isLoading,
+	} = useSelector(state => state.auth)
 	useEffect(() => {
 		if (password !== undefined && password !== '' && confirmPassword !== undefined && confirmPassword !== '' && password === confirmPassword) {
 			setDisabled(false)

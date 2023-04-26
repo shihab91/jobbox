@@ -8,7 +8,10 @@ const Login = () => {
 	const { register, handleSubmit } = useForm()
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
-	const { email, isLoading } = useSelector(state => state.auth)
+	const {
+		user: { email },
+		isLoading,
+	} = useSelector(state => state.auth)
 	const onSubmit = ({ email, password }) => {
 		dispatch(loginUser({ email, password }))
 	}

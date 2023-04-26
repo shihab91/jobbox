@@ -14,7 +14,7 @@ root.render(
 				position='top-center'
 				reverseOrder={false}
 				toastOptions={{
-					duration: 5000,
+					duration: 2000,
 				}}
 			/>
 			<App />

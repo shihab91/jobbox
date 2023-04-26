@@ -4,8 +4,7 @@ import auth from '../../firebase/firebase.config'
 import { toast } from 'react-hot-toast'
 
 const initialState = {
-	email: '',
-	role: '',
+	user: { email: '', role: '' },
 	isLoading: true,
 	isError: false,
 	error: '',
@@ -42,15 +41,27 @@ export const googleLogin = createAsyncThunk('auth/googleLogin', async (payload, 
 		return thunkAPI.rejectWithValue(error.message)
 	}
 })
+export const getUser = createAsyncThunk('auth/getUser', async (email, thunkAPI) => {
+	try {
+		const res = await fetch(`${process.env.REACT_APP_DEV_URL}/user/${email}`)
+		const data = await res.json()
+		if (data.status) {
+			return data.data
+		}
+		return { email }
+	} catch (error) {
+		return thunkAPI.rejectWithValue(error.message)
+	}
+})
 const authSlice = createSlice({
 	name: 'auth',
 	initialState,
 	reducers: {
 		logOut: state => {
-			state.email = ''
+			state.user = {}
 		},
 		setUser: (state, { payload }) => {
-			state.email = payload
+			state.user.email = payload
 			state.isLoading = false
 		},
 		toggleLoading: state => {
@@ -68,7 +79,7 @@ const authSlice = createSlice({
 				state.isLoading = false
 				state.isError = false
 				state.error = ''
-				state.email = payload
+				state.user.email = payload
 				toast.success('Signed in successfully!')
 			})
 			.addCase(createUser.rejected, (state, { payload }) => {
@@ -86,7 +97,7 @@ const authSlice = createSlice({
 				state.isLoading = false
 				state.isError = false
 				state.error = ''
-				state.email = payload
+				state.user.email = payload
 				toast.success('Signed in successfully!')
 			})
 			.addCase(loginUser.rejected, (state, { payload }) => {
@@ -104,7 +115,7 @@ const authSlice = createSlice({
 				state.isLoading = false
 				state.isError = false
 				state.error = ''
-				state.email = payload
+				state.user.email = payload
 				toast.success('Signed in successfully!')
 			})
 			.addCase(googleLogin.rejected, (state, { payload }) => {
@@ -112,6 +123,23 @@ const authSlice = createSlice({
 				state.isError = false
 				state.error = payload
 				toast.error(`Sign in failed: ${payload}`)
+			})
+			.addCase(getUser.pending, state => {
+				state.isLoading = true
+				state.isError = false
+				state.error = ''
+			})
+			.addCase(getUser.fulfilled, (state, { payload }) => {
+				state.isLoading = false
+				state.isError = false
+				state.error = ''
+				// payload.stat ? state.user = payload.data : state.user.email = payload
+				state.user = { ...payload }
+			})
+			.addCase(getUser.rejected, (state, { payload }) => {
+				state.isLoading = false
+				state.isError = false
+				state.error = payload
 			})
 	},
 })
