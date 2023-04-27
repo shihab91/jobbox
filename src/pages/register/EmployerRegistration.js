@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { FaChevronLeft } from "react-icons/fa";
+import React, { useEffect } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
+import { FaChevronLeft } from 'react-icons/fa'
 import { useRegisterMutation } from '../../features/auth/authApi'
 import { useSelector } from 'react-redux'
 
 const EmployerRegistration = () => {
-	const [countries, setCountries] = useState([])
-
 	const { email, role } = useSelector(state => state.auth.user)
 	const { handleSubmit, register, control } = useForm({ defaultValues: { email } })
 	const term = useWatch({ control, name: 'term' })
@@ -35,13 +33,6 @@ const EmployerRegistration = () => {
 	]
 
 	const employeeRange = ['1 - 10', '11 - 50', '51 - 100', 'Above 100']
-
-	useEffect(() => {
-		fetch('https://restcountries.com/v3.1/all')
-			.then(res => res.json())
-			.then(data => setCountries(data))
-	}, [])
-
 	const onSubmit = data => {
 		postUser({ ...data, role: 'employer' })
 	}
@@ -154,4 +145,4 @@ const EmployerRegistration = () => {
 	)
 }
 
-export default EmployerRegistration;
+export default EmployerRegistration

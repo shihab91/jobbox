@@ -1,19 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import meeting from '../assets/meeting.jpg'
 import { BsArrowRightShort, BsArrowReturnRight } from 'react-icons/bs'
-import { useApplyMutation, useGetJobQuery, useQuestionMutation } from '../features/job/jobApi'
+import { useApplyMutation, useGetJobQuery, useQuestionMutation, useReplyMutation } from '../features/job/jobApi'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { toast } from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 const JobDetails = () => {
-	const { id } = useParams()
-	const { user } = useSelector(state => state.auth)
-	const { data, isLoading } = useGetJobQuery(id)
 	const [apply] = useApplyMutation()
 	const [sendQuestion] = useQuestionMutation()
 	const navigate = useNavigate()
+	const [reply, setReply] = useState('')
+	const { id } = useParams()
+	const { user } = useSelector(state => state.auth)
+	const { data } = useGetJobQuery(id, { pollingInterval: 1000 })
+	const [sendReply] = useReplyMutation()
 	const { register, handleSubmit, reset } = useForm()
 	const { companyName, position, location, experience, workLevel, employmentType, salaryRange, skills, requirements, responsibilities, overview, queries, applicants, _id } = data?.data || {}
 	const handleApply = () => {
@@ -41,6 +43,13 @@ const JobDetails = () => {
 		}
 		sendQuestion(queData)
 		reset()
+	}
+	const handleReply = id => {
+		const data = {
+			reply,
+			userId: id,
+		}
+		sendReply(data)
 	}
 	return (
 		<div className='pt-14 grid grid-cols-12 gap-5'>
@@ -105,23 +114,27 @@ const JobDetails = () => {
 										</p>
 									))}
 
-									<div className='flex gap-3 my-5'>
-										<input placeholder='Reply' type='text' className='w-full' />
-										<button className='shrink-0 h-14 w-14 bg-primary/10 border border-primary hover:bg-primary rounded-full transition-all  grid place-items-center text-primary hover:text-white' type='button'>
-											<BsArrowRightShort size={30} />
-										</button>
-									</div>
+									{user.role === 'employer' && (
+										<div className='flex gap-3 my-5'>
+											<input placeholder='Reply' type='text' className='w-full' onBlur={e => setReply(e.target.value)} />
+											<button className='shrink-0 h-14 w-14 bg-primary/10 border border-primary hover:bg-primary rounded-full transition-all  grid place-items-center text-primary hover:text-white' type='button' onClick={() => handleReply(id)}>
+												<BsArrowRightShort size={30} />
+											</button>
+										</div>
+									)}
 								</div>
 							))}
 						</div>
-						<form onSubmit={handleSubmit(handleQuestion)}>
-							<div className='flex gap-3 my-5'>
-								<input placeholder='Ask a question...' type='text' className='w-full' {...register('question')} />
-								<button className='shrink-0 h-14 w-14 bg-primary/10 border border-primary hover:bg-primary rounded-full transition-all  grid place-items-center text-primary hover:text-white' type='submit'>
-									<BsArrowRightShort size={30} />
-								</button>
-							</div>
-						</form>
+						{user.role === 'candidate' && (
+							<form onSubmit={handleSubmit(handleQuestion)}>
+								<div className='flex gap-3 my-5'>
+									<input placeholder='Ask a question...' type='text' className='w-full' {...register('question')} />
+									<button className='shrink-0 h-14 w-14 bg-primary/10 border border-primary hover:bg-primary rounded-full transition-all  grid place-items-center text-primary hover:text-white' type='submit'>
+										<BsArrowRightShort size={30} />
+									</button>
+								</div>
+							</form>
+						)}
 					</div>
 				</div>
 			</div>
